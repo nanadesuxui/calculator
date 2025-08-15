@@ -6,106 +6,213 @@
 <title>Калькулятор стоимости</title>
 <style>
   :root {
-    --bg: #ffffff;
-    --panel: #f8f8f8;
-    --muted: #eeeeee;
-    --text: #000000;
-    --sub: #444444;
-    --accent: #007acc;
-    --danger: #cc0000;
-    --radius: 10px;
-    --gap: 14px;
-    --shadow: 0 8px 24px rgba(0,0,0,0.1);
+    --bg:#fff; --panel:#f8f8f8; --muted:#eee; --text:#000; --sub:#444;
+    --accent:#007acc; --danger:#cc0000; --ok:#0a7f3f;
+    --radius:10px; --gap:14px; --shadow:0 8px 24px rgba(0,0,0,0.1);
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font: 14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial;
-  }
-  .wrap { max-width: 1080px; margin: auto; padding: 24px; }
-  h1 { font-size: 28px; margin: 0 0 10px; }
-  .sub { color: var(--sub); margin-bottom: 22px; }
-  .grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: var(--gap); }
-  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
-  .card { background: var(--panel); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; }
-  .card h2 { font-size: 18px; margin: 0 0 12px; }
-  .row { display: grid; grid-template-columns: 1fr 130px; gap: 10px; align-items: center; margin: 8px 0; }
-  .row > label { color: var(--sub); }
-  input[type="number"], select {
-    width: 100%;
-    background: var(--muted);
-    border: 1px solid #cccccc;
-    color: var(--text);
-    padding: 10px;
-    border-radius: 6px;
-  }
-  input[type="checkbox"] { transform: scale(1.15); }
-  .switch { display: flex; align-items: center; gap: 10px; }
-  .sec { border-top: 1px solid #ddd; margin: 14px 0; padding-top: 12px; }
-  .muted { color: var(--sub); }
-  .totals { position: sticky; top: 12px; display: flex; flex-direction: column; gap: var(--gap); }
-  .kpi { background: var(--panel); border: 1px solid #ddd; border-radius: var(--radius); padding: 16px; }
-  .kpi h3 { margin: 0 0 8px; font-size: 15px; color: var(--sub); }
-  .money { font-weight: 700; font-size: 20px; }
-  .pill { display: inline-block; background: var(--muted); padding: 6px 10px; border-radius: 999px; font-size: 12px; color: var(--text); }
-  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .btn { cursor: pointer; background: var(--accent); color: white; border: 0; border-radius: 6px; padding: 10px; font-weight: 700; }
-  .btn:active { transform: translateY(1px); }
-  .note { font-size: 12px; color: var(--sub); }
-  .hr { height: 1px; background: #ddd; margin: 10px 0; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial}
+  .wrap{max-width:1080px;margin:auto;padding:24px}
+  h1{font-size:28px;margin:0 0 10px}
+  .sub{color:var(--sub);margin-bottom:22px}
+  .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:var(--gap)}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+  .card h2{font-size:18px;margin:0 0 12px}
+  .row{display:grid;grid-template-columns:1fr 160px;gap:10px;align-items:center;margin:8px 0}
+  .row > label{color:var(--sub)}
+  input[type="number"], select{width:100%;background:var(--muted);border:1px solid #ccc;color:var(--text);padding:10px;border-radius:6px}
+  input[type="checkbox"]{transform:scale(1.15)}
+  .sec{border-top:1px solid #ddd;margin:14px 0;padding-top:12px}
+  .muted{color:var(--sub)}
+  .totals{position:sticky;top:12px;display:flex;flex-direction:column;gap:var(--gap)}
+  .kpi{background:var(--panel);border:1px solid #ddd;border-radius:var(--radius);padding:16px}
+  .kpi h3{margin:0 0 8px;font-size:15px;color:var(--sub)}
+  .money{font-weight:700;font-size:20px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .btn{cursor:pointer;background:var(--accent);color:#fff;border:0;border-radius:6px;padding:10px;font-weight:700}
+  .btn:active{transform:translateY(1px)}
+  .note{font-size:12px;color:var(--sub)}
+  .hr{height:1px;background:#ddd;margin:10px 0}
+  .total-line{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+  .strike{color:#777;text-decoration:line-through}
+  .save{color:var(--danger);font-weight:700}
+  .dim{color:#666}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Калькулятор стоимости</h1>
-  <div class="sub">Дизайн экранов, вёрстка в Tilda, опции и поэтапная оплата.</div>
+  <div class="sub">Дизайн экранов, вёрстка в Tilda, фичи, доп‑опции и срочность.</div>
   <div class="grid">
     <section class="card">
       <h2>Параметры проекта</h2>
-      <div class="row"><label>Простых экранов</label><input id="n_simple" type="number" value="0"></div>
-      <div class="row"><label>Средних экранов</label><input id="n_medium" type="number" value="0"></div>
-      <div class="row"><label>Сложных экранов</label><input id="n_complex" type="number" value="0"></div>
-      <div class="row"><label>Повтор экрана</label><input id="n_repeat" type="number" value="0"></div>
+      <div class="row"><label>Простых экранов</label><input id="n_simple" type="number" min="0" step="1" value="0"></div>
+      <div class="row"><label>Средних экранов</label><input id="n_medium" type="number" min="0" step="1" value="0"></div>
+      <div class="row"><label>Сложных экранов</label><input id="n_complex" type="number" min="0" step="1" value="0"></div>
+      <div class="row"><label>Повтор экрана</label><input id="n_repeat" type="number" min="0" step="1" value="0"></div>
       <div class="row"><label>Нужна вёрстка?</label><input id="need_dev" type="checkbox"></div>
+
       <div class="sec">
-        <h2>Фичи (надбавка)</h2>
-        <div class="row"><label>Галерея</label><input id="f_gallery" type="checkbox"></div>
-        <div class="row"><label>Форма</label><input id="f_form" type="checkbox"></div>
+        <h2>Фичи (введите количество экранов с фичей)</h2>
+        <div class="row"><label>Галерея/слайдер<br><span class="dim">+500₽ дизайн, +300₽ вёрстка / экран</span></label><input id="f_gallery_qty" type="number" min="0" step="1" value="0"></div>
+        <div class="row"><label>Форма/валидация<br><span class="dim">+700₽ дизайн, +500₽ вёрстка / экран</span></label><input id="f_form_qty" type="number" min="0" step="1" value="0"></div>
+        <div class="row"><label>Карта/встраивание<br><span class="dim">+700₽ дизайн, +500₽ вёрстка / экран</span></label><input id="f_map_qty" type="number" min="0" step="1" value="0"></div>
+        <div class="row"><label>Интерактив/анимация<br><span class="dim">+1200₽ дизайн, +900₽ вёрстка / экран</span></label><input id="f_interact_qty" type="number" min="0" step="1" value="0"></div>
+      </div>
+
+      <div class="sec">
+        <h2>Доп‑опции</h2>
+        <div class="row"><label>UI‑кит/гайд (15 000 ₽)</label><input id="ui_kit_on" type="checkbox"></div>
+        <div class="row"><label>Копирайтинг — введите количество экранов</label><input id="copy_qty" type="number" min="0" step="1" value="0"></div>
+        <div class="row"><label>Анимация Zero Block — введите количество экранов (2 000 ₽/экр)</label><input id="zb_qty" type="number" min="0" step="1" value="0"></div>
+      </div>
+
+      <div class="sec">
+        <h2>Сроки</h2>
+        <div class="row"><label>Срочность +30%</label><input id="urgent_on" type="checkbox"></div>
       </div>
     </section>
+
     <aside class="totals">
       <div class="kpi">
-        <h3>Итого</h3>
-        <div class="row"><label>Дизайн</label><div id="sum_d_after" class="money">0 ₽</div></div>
-        <div class="row"><label>Вёрстка</label><div id="sum_v_after" class="money">0 ₽</div></div>
+        <h3>Итоги по работам</h3>
+        <div class="two">
+          <div>
+            <div class="dim">Дизайн</div>
+            <div id="sum_d_after" class="money">0 ₽</div>
+          </div>
+          <div>
+            <div class="dim">Вёрстка</div>
+            <div id="sum_v_after" class="money">0 ₽</div>
+          </div>
+        </div>
         <div class="hr"></div>
-        <div class="row"><label>Проект</label><div id="project_total" class="money">0 ₽</div></div>
+        <div class="row"><label>Доп‑опции</label><div id="dops_sum" class="money">0 ₽</div></div>
       </div>
+
+      <div class="kpi">
+        <h3>ИТОГО проект</h3>
+        <div id="total_line" class="total-line">
+          <span id="total_main" class="money">0 ₽</span>
+        </div>
+        <div class="note">Скидка по объёму применяется автоматически от общего числа экранов.</div>
+      </div>
+
+      <button class="btn" id="copySummary">Скопировать смету</button>
     </aside>
   </div>
 </div>
+
 <script>
 (function(){
-  const RD = {simple:3500, medium:5000, complex:8000, repeat:2000};
+  // Константы (как в файле)
+  const RD = {simple:3000, medium:4500, complex:7500, repeat:1500};
   const RV = {simple:1500, medium:2500, complex:4000, repeat:1000};
+
+  const ADD_D = {gallery:0, form:0, map:0, inter:500};
+  const ADD_V = {gallery:500, form:500, map:500, inter:500};
+
+  const UI_KIT_PRICE = 15000;
+  const COPY_PRICE   = 1500;
+  const ZB_PRICE     = 2000;
+
   const nf = new Intl.NumberFormat('ru-RU');
   const el = id=>document.getElementById(id);
-  const ids = ['n_simple','n_medium','n_complex','n_repeat','need_dev','f_gallery','f_form'];
+
+  const ids = [
+    'n_simple','n_medium','n_complex','n_repeat','need_dev',
+    'f_gallery_qty','f_form_qty','f_map_qty','f_interact_qty',
+    'ui_kit_on','copy_qty','zb_qty','urgent_on'
+  ];
   ids.forEach(id=>el(id).addEventListener('input', calc));
   ids.forEach(id=>el(id).addEventListener('change', calc));
-  function valInt(id){ return parseInt(el(id).value)||0; }
-  function valBool(id){ return el(id).checked; }
-  function money(n){ return nf.format(Math.round(n))+' ₽'; }
-  function calc(){
-    const n = {simple:valInt('n_simple'), medium:valInt('n_medium'), complex:valInt('n_complex'), repeat:valInt('n_repeat')};
-    const sum_d = n.simple*RD.simple + n.medium*RD.medium + n.complex*RD.complex + n.repeat*RD.repeat;
-    const sum_v = valBool('need_dev') ? n.simple*RV.simple + n.medium*RV.medium + n.complex*RV.complex + n.repeat*RV.repeat : 0;
-    el('sum_d_after').textContent = money(sum_d);
-    el('sum_v_after').textContent = money(sum_v);
-    el('project_total').textContent = money(sum_d+sum_v);
+
+  function i(id){ return Math.max(0, parseInt(el(id).value||'0',10)||0); }
+  function b(id){ return !!el(id).checked; }
+  function money(n){ return nf.format(Math.round(n)) + ' ₽'; }
+
+  function discountPct(total){
+    if(total>=101) return .12;
+    if(total>=61)  return .10;
+    if(total>=31)  return .08;
+    if(total>=16)  return .05;
+    return 0;
   }
+
+  function calc(){
+    // Кол-ва экранов
+    const n_simple=i('n_simple'), n_medium=i('n_medium'), n_complex=i('n_complex'), n_repeat=i('n_repeat');
+    const totalScreens = n_simple+n_medium+n_complex+n_repeat;
+
+    // База работ (до надбавок)
+    const sum_d_base = n_simple*RD.simple + n_medium*RD.medium + n_complex*RD.complex + n_repeat*RD.repeat;
+    const sum_v_base = n_simple*RV.simple + n_medium*RV.medium + n_complex*RV.complex + n_repeat*RV.repeat;
+
+    // Надбавки считаем по количеству экранов с фичами
+    const f_gallery=i('f_gallery_qty'), f_form=i('f_form_qty'), f_map=i('f_map_qty'), f_inter=i('f_interact_qty');
+
+    // Дизайн: надбавка за экран * число экранов с фичей
+    const add_d_sum = f_gallery*ADD_D.gallery + f_form*ADD_D.form + f_map*ADD_D.map + f_inter*ADD_D.inter;
+    // Вёрстка
+    const add_v_sum = f_gallery*ADD_V.gallery + f_form*ADD_V.form + f_map*ADD_V.map + f_inter*ADD_V.inter;
+
+    // Итого до скидок
+    const sum_d_raw = sum_d_base + add_d_sum;
+    const sum_v_raw = (b('need_dev') ? (sum_v_base + add_v_sum) : 0);
+
+    // Скидка по объёму на ИТОГО работ (дизайн+вёрстка)
+    const disc = discountPct(totalScreens);
+    const works_before = sum_d_raw + sum_v_raw;
+    const works_after  = works_before * (1 - disc);
+
+    // Для правой колонки «Итоги по работам» показываем распределение после скидки пропорционально
+    let sum_d_after = sum_d_raw, sum_v_after = sum_v_raw;
+    if(works_before>0){
+      const k = (1 - disc);
+      sum_d_after = sum_d_raw * k;
+      sum_v_after = sum_v_raw * k;
+    }
+
+    // Доп‑опции
+    const dops_sum = (b('ui_kit_on')?UI_KIT_PRICE:0) + i('copy_qty')*COPY_PRICE + i('zb_qty')*ZB_PRICE;
+
+    // Срочность (на всё, как в файле — после скидки и допов не дисконтируются)
+    const project_base = works_after + dops_sum;
+    const project_total = project_base * (b('urgent_on')?1.3:1);
+
+    // === Вывод ===
+    el('sum_d_after').textContent = money(sum_d_after);
+    el('sum_v_after').textContent = money(sum_v_after);
+    el('dops_sum').textContent = money(dops_sum);
+
+    const totalLine = el('total_line');
+    totalLine.innerHTML = ''; // очистка
+
+    if(disc > 0){
+      const main = document.createElement('span'); main.className='money'; main.textContent = money(project_total);
+      const strike = document.createElement('span'); strike.className='strike'; strike.textContent = money(project_total / (b('urgent_on')?1.3:1)); // без срочности
+      // Страйк должен показывать цену без скидки, но с допами и срочностью.
+      // works_before (до скидки), + dops, затем * срочность:
+      const before = (works_before + dops_sum) * (b('urgent_on')?1.3:1);
+      strike.textContent = money(before);
+      const save = document.createElement('span'); save.className='save'; save.textContent = '– ' + money(before - project_total);
+      totalLine.appendChild(main);
+      totalLine.appendChild(strike);
+      totalLine.appendChild(save);
+    } else {
+      const main = document.createElement('span'); main.className='money'; main.textContent = money(project_total);
+      totalLine.appendChild(main);
+    }
+  }
+
+  document.getElementById('copySummary').addEventListener('click', ()=>{
+    const text = document.body.innerText.replace(/\n{2,}/g,'\n');
+    navigator.clipboard.writeText(text).then(()=>{
+      const b=document.getElementById('copySummary'); const t=b.textContent; b.textContent='✓ Скопировано'; setTimeout(()=>b.textContent=t,1200);
+    });
+  });
+
   calc();
 })();
 </script>
