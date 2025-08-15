@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Калькулятор стоимости</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --panel: #f8f8f8;
+    --muted: #eeeeee;
+    --text: #000000;
+    --sub: #444444;
+    --accent: #007acc;
+    --danger: #cc0000;
+    --radius: 10px;
+    --gap: 14px;
+    --shadow: 0 8px 24px rgba(0,0,0,0.1);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial;
+  }
+  .wrap { max-width: 1080px; margin: auto; padding: 24px; }
+  h1 { font-size: 28px; margin: 0 0 10px; }
+  .sub { color: var(--sub); margin-bottom: 22px; }
+  .grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: var(--gap); }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: var(--panel); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; }
+  .card h2 { font-size: 18px; margin: 0 0 12px; }
+  .row { display: grid; grid-template-columns: 1fr 130px; gap: 10px; align-items: center; margin: 8px 0; }
+  .row > label { color: var(--sub); }
+  input[type="number"], select {
+    width: 100%;
+    background: var(--muted);
+    border: 1px solid #cccccc;
+    color: var(--text);
+    padding: 10px;
+    border-radius: 6px;
+  }
+  input[type="checkbox"] { transform: scale(1.15); }
+  .switch { display: flex; align-items: center; gap: 10px; }
+  .sec { border-top: 1px solid #ddd; margin: 14px 0; padding-top: 12px; }
+  .muted { color: var(--sub); }
+  .totals { position: sticky; top: 12px; display: flex; flex-direction: column; gap: var(--gap); }
+  .kpi { background: var(--panel); border: 1px solid #ddd; border-radius: var(--radius); padding: 16px; }
+  .kpi h3 { margin: 0 0 8px; font-size: 15px; color: var(--sub); }
+  .money { font-weight: 700; font-size: 20px; }
+  .pill { display: inline-block; background: var(--muted); padding: 6px 10px; border-radius: 999px; font-size: 12px; color: var(--text); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .btn { cursor: pointer; background: var(--accent); color: white; border: 0; border-radius: 6px; padding: 10px; font-weight: 700; }
+  .btn:active { transform: translateY(1px); }
+  .note { font-size: 12px; color: var(--sub); }
+  .hr { height: 1px; background: #ddd; margin: 10px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Калькулятор стоимости</h1>
+  <div class="sub">Дизайн экранов, вёрстка в Tilda, опции и поэтапная оплата.</div>
+  <div class="grid">
+    <section class="card">
+      <h2>Параметры проекта</h2>
+      <div class="row"><label>Простых экранов</label><input id="n_simple" type="number" value="0"></div>
+      <div class="row"><label>Средних экранов</label><input id="n_medium" type="number" value="0"></div>
+      <div class="row"><label>Сложных экранов</label><input id="n_complex" type="number" value="0"></div>
+      <div class="row"><label>Повтор экрана</label><input id="n_repeat" type="number" value="0"></div>
+      <div class="row"><label>Нужна вёрстка?</label><input id="need_dev" type="checkbox"></div>
+      <div class="sec">
+        <h2>Фичи (надбавка)</h2>
+        <div class="row"><label>Галерея</label><input id="f_gallery" type="checkbox"></div>
+        <div class="row"><label>Форма</label><input id="f_form" type="checkbox"></div>
+      </div>
+    </section>
+    <aside class="totals">
+      <div class="kpi">
+        <h3>Итого</h3>
+        <div class="row"><label>Дизайн</label><div id="sum_d_after" class="money">0 ₽</div></div>
+        <div class="row"><label>Вёрстка</label><div id="sum_v_after" class="money">0 ₽</div></div>
+        <div class="hr"></div>
+        <div class="row"><label>Проект</label><div id="project_total" class="money">0 ₽</div></div>
+      </div>
+    </aside>
+  </div>
+</div>
+<script>
+(function(){
+  const RD = {simple:3500, medium:5000, complex:8000, repeat:2000};
+  const RV = {simple:1500, medium:2500, complex:4000, repeat:1000};
+  const nf = new Intl.NumberFormat('ru-RU');
+  const el = id=>document.getElementById(id);
+  const ids = ['n_simple','n_medium','n_complex','n_repeat','need_dev','f_gallery','f_form'];
+  ids.forEach(id=>el(id).addEventListener('input', calc));
+  ids.forEach(id=>el(id).addEventListener('change', calc));
+  function valInt(id){ return parseInt(el(id).value)||0; }
+  function valBool(id){ return el(id).checked; }
+  function money(n){ return nf.format(Math.round(n))+' ₽'; }
+  function calc(){
+    const n = {simple:valInt('n_simple'), medium:valInt('n_medium'), complex:valInt('n_complex'), repeat:valInt('n_repeat')};
+    const sum_d = n.simple*RD.simple + n.medium*RD.medium + n.complex*RD.complex + n.repeat*RD.repeat;
+    const sum_v = valBool('need_dev') ? n.simple*RV.simple + n.medium*RV.medium + n.complex*RV.complex + n.repeat*RV.repeat : 0;
+    el('sum_d_after').textContent = money(sum_d);
+    el('sum_v_after').textContent = money(sum_v);
+    el('project_total').textContent = money(sum_d+sum_v);
+  }
+  calc();
+})();
+</script>
+</body>
+</html>
